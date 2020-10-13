@@ -6,6 +6,7 @@ output: github_document
 ```{r setup, include = FALSE}
 library(tidyverse)
 library(p8105.datasets)
+library(leaflet)
 
 knitr::opts_chunk$set(
   fig.width = 6,
@@ -30,4 +31,66 @@ scale_fill_discrete = scale_fill_viridis_d
 ```{r}
 data("nyc_airbnb")
 ```
+
+
+## Brainstorm some questions
+
+* what is the best Airbnb in staten island for <$100
+* what price range is popular in each borough? most rented? 
+* what apartment features are related to price?
+* cheapest room type in each neighborhood?
+* hosts have higher ratings?
+
+
+## Answer some questions
+
+data cleaning
+
+```{r}
+nyc_airbnb = 
+  nyc_airbnb %>% 
+  mutate(stars = review_scores_location / 2)
+```
+
+
+```{r}
+nyc_airbnb %>% 
+  count(neighbourhood_group, room_type) %>% 
+  pivot_wider(names_from = room_type, values_from = n)
+```
+
+```{r}
+nyc_airbnb %>% 
+  group_by(neighbourhood_group, room_type) %>% 
+  summarize(mean_price = mean(price))
+```
+
+```{r}
+nyc_airbnb %>% 
+  filter(neighbourhood_group == "Manhattan") %>% 
+  count(neighbourhood)
+
+nyc_airbnb %>% 
+  filter(
+    price < 1000,
+    neighbourhood_group == "Manhattan") %>% 
+  mutate(neighbourhood = fct_reorder(neighbourhood, price)) %>% 
+  ggplot(aes(x = neighbourhood, y = price)) +
+  geom_boxplot() + 
+  coord_flip()
+```
+
+
+
+```{r}
+nyc_airbnb %>% 
+  sample_n(1000) %>% 
+  ggplot(aes(x = lat, y = long, color = price)) + 
+  geom_point()
+```
+
+
+
+
+
 
