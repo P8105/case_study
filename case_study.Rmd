@@ -1,6 +1,6 @@
 ---
 title: "Case study"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include = FALSE}
@@ -91,6 +91,20 @@ nyc_airbnb %>%
 
 
 
+## Create a leaflet map
 
+Create a quick leaflet map.
 
+```{r}
+pal <- colorNumeric("magma", nyc_airbnb %>% pull(stars))
+
+nyc_airbnb %>% 
+  drop_na(stars) %>% 
+  sample_n(5000) %>% 
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addCircleMarkers(~lat, ~long, radius = 1, color = ~pal(stars))
+```
+
+Note -- this is almost the same as the one on [this page](https://p8105.com/what_is_ds_i.html), but I've omitted the labels here. 
 
